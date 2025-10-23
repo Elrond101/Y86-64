@@ -34,9 +34,8 @@ class Bin:
             self.num[i] = not self.num[i]
 """寄存器"""
 class Register(Bin):
-    def __init__(self,No):
+    def __init__(self):
         super().__init__(64)
-        self.No = No
     def modify(self,bin):
         for i in range(64):
             self.num[i] = bin.num[i]
