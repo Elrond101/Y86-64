@@ -4,12 +4,26 @@ from xml.dom.pulldom import DOMEventStream
 """从内存读取指令字节，地址为PC的值"""
 from pathlib import Path
 from basic import *
+def predict_PC(PC,need_regids,need_valC):
+    bits8 = Bin(64)
+    bits64 = Bin(64)
+    if need_regids:
+        bits8.num = bits8.from_decimal(8)
+    if need_valC:
+        bits64.num = bits64.from_decimal(64)
+    return add(PC, add(bits8, bits64)[0])[0]
+"""这里在以后要加入溢出判断"""
 def fetch(PC):
+    Stat = [0,0]
     icode = Bin(4)
     ifun = Bin(4)
     rA = [1,1,1,1]
     rB = [1,1,1,1]
-    emp_bin = Bin(64)
+    val_C = Bin(64)
+    val_P= PC
+    instr_valid = 1 #是否合法
+    need_regids = 0 #是否需要寄存器指示符
+    need_valC = 0 #是否需要常数字
     try:
         with open('Memory.txt', 'r') as file:
             pass
@@ -28,74 +42,40 @@ def fetch(PC):
                         icode.num[i] = command.pop(0)
 
                     """提取指令中的信息"""
-                    if len(command) == 4 and\
-                    (icode.num == [0,0,0,0]
-                    or icode.num == [0,0,0,1]
-                    or icode.num == [1,0,0,1]): #当代码为halt,nop或ret
-                        if command == [0,0,0,0]:
-                             return [0, 0], icode, ifun, rA, rB, emp_bin #输出AOK状态码及icode
-                        else:
-                             return [1, 1], icode, ifun, rA, rB, emp_bin #输出INS状态码
-                    elif len(command) == 12 and\
-                    (icode.num == [1,0,1,0]
-                    or icode.num == [1,0,1,1]): #当代码为pushq或popq
-                        if command[:4] == [0,0,0,0] and command[-4:] == [1,1,1,1]:
-                            del command[:4]
-                            del command[-4:] #剩余寄存器编号
-                            rA = command
-                            return [0, 0], icode, ifun, rA, rB, emp_bin #输出AOK状态码、icode和寄存器编号
-                        else:
-                            return [1, 1], icode, ifun, rA, rB, emp_bin #输出INS状态码
-                    elif len(command) == 12 and\
-                    icode.num == [0,0,1,0] and\
-                    command[:4] == [0,0,0,0]: #rrmovq
-                        rA = command[4:8]
-                        rB = command[-4:]
-                        return [0, 0], icode, ifun, rA, rB, emp_bin #输出AOK状态码、icode、rA和rB
-                    elif len(command) == 76 and\
-                    icode.num == [0,0,1,1]: #irmovq
-                        imm = Bin(64) #储存立即数
-                        if command[:4] != [0,0,0,0]:
-                            return [1, 1], icode, ifun, rA, rB, imm #输出INS状态码
-                        else:
-                            del command[:8]
-                            rB = command[:4]
-                            imm.num = command[-64:]
-                            return [0, 0], icode, ifun, rA, rB, imm #输出AOK状态码、icode、rB和立即数
-                    elif len(command) == 76 and\
-                    (icode.num == [0,1,0,0] or
-                    icode.num == [0,1,0,1]): #rmmovq和mrmovq
-                        des = Bin(64)
-                        if command[:4] != [0,0,0,0]:
-                            return [1, 1], icode, ifun, rA, rB, des #输出INS状态码
-                        else:
-                            rA = command[4:8]
-                            rB = command[8:12]
-                            des.num = command[-64:]
-                            return [0, 0], icode, ifun, rA, rB, des #输出AOK状态码、icode、rA、rB和偏移量
-                    elif len(command) == 68 and\
-                    icode.num == [1,0,0,0]: #call
-                        des = Bin(64)
-                        if command[:4] != [0,0,0,0]:
-                            return [1, 1], icode, ifun, rA, rB, des
-                        else:
-                            des.num = command[-64:]
-                            return [0, 0], icode, ifun, rA, rB, des
-                    elif len(command) == 12 and \
-                    (icode.num == [0,0,1,0] or
-                    icode.num == [0,1,1,0]): #OPq和cmovXX
-                        ifun.num = command[:4]
+                    if icode.num == [0,0,1,0] or\
+                    icode.num == [0,0,1,1] or\
+                    icode.num == [0,1,0,0] or\
+                    icode.num == [0,1,0,1] or\
+                    icode.num == [0,1,1,0] or\
+                    icode.num == [1,0,1,0] or\
+                    icode.num == [1,0,1,1]:
+                        need_regids = 1
+                    if icode.num == [0,0,1,1] or\
+                    icode.num == [0,1,0,0] or\
+                    icode.num == [0,1,0,1] or\
+                    icode.num == [0,1,1,1] or\
+                    icode.num == [1,0,0,0]:
+                        need_valC = 1
+                    if icode.num == [1,1,0,0] or\
+                    icode.num == [1,1,0,1] or\
+                    icode.num == [1,1,1,0] or\
+                    icode.num == [1,1,1,1]:
+                        instr_valid = 0
+                    if instr_valid:
+                        Stat = [0,0]
+                    else:
+                        Stat = [1,1]
+                    ifun.num = command[:4]
+                    if need_regids:
                         rA = command[4:8]
                         rB = command[8:12]
-                        return [0, 0], icode, ifun, rA, rB, emp_bin #输出AOK状态码、icode、ifun、rA和rB
-                    elif len(command) == 68 and\
-                    icode.num == [0,1,1,1]: #jXX
-                        ifun.num = command[:4]
-                        des = Bin(64)
-                        des.num = command[-64:]
-                        return [0, 0], icode, ifun, rA, rB, des #输出AOK状态码、icode、ifun和目标地址
-                    else:
-                        return [1, 1], icode, ifun, rA, rB, emp_bin #输出INS状态码
+                        if need_valC:
+                            val_C.num = command[12:]
+                    elif need_valC:
+                        val_C.num = command[4:]
+                    val_P = predict_PC(PC,need_regids,need_valC)
+                    return Stat,icode.num,ifun.num,rA,rB,val_C.num,val_P.num
+
 
 
 

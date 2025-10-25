@@ -32,6 +32,22 @@ class Bin:
     def comp(self):
         for i in range(self.n):
             self.num[i] = not self.num[i]
+    """十进制转二进制"""
+    def from_decimal(self, decimal_num):
+        if decimal_num == 0:
+            self.num = [0] * self.n
+            return self.num
+        temp = decimal_num
+        for i in range(self.n - 1, -1, -1):
+            self.num[i] = temp % 2
+            temp = temp // 2
+        return self.num
+    """二进制转十进制"""
+    def to_decimal(self):
+        result = 0
+        for i in range(self.n):
+            result = result * 2 + self.num[i]
+        return result
 """寄存器"""
 class Register(Bin):
     def __init__(self):
