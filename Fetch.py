@@ -1,5 +1,4 @@
 """取指"""
-from xml.dom.pulldom import DOMEventStream
 
 """从内存读取指令字节，地址为PC的值"""
 from pathlib import Path
@@ -42,24 +41,11 @@ def fetch(PC):
                         icode.num[i] = command.pop(0)
 
                     """提取指令中的信息"""
-                    if icode.num == [0,0,1,0] or\
-                    icode.num == [0,0,1,1] or\
-                    icode.num == [0,1,0,0] or\
-                    icode.num == [0,1,0,1] or\
-                    icode.num == [0,1,1,0] or\
-                    icode.num == [1,0,1,0] or\
-                    icode.num == [1,0,1,1]:
+                    if icode.num in [[0,0,1,0],[0,0,1,1],[0,1,0,0],[0,1,0,1],[0,1,1,0],[1,0,1,0],[1,0,1,1]]:
                         need_regids = 1
-                    if icode.num == [0,0,1,1] or\
-                    icode.num == [0,1,0,0] or\
-                    icode.num == [0,1,0,1] or\
-                    icode.num == [0,1,1,1] or\
-                    icode.num == [1,0,0,0]:
+                    if icode.num in [[0,0,1,1],[0,1,0,0],[0,1,0,1],[0,1,1,1],[1,0,0,0]]:
                         need_valC = 1
-                    if icode.num == [1,1,0,0] or\
-                    icode.num == [1,1,0,1] or\
-                    icode.num == [1,1,1,0] or\
-                    icode.num == [1,1,1,1]:
+                    if icode.num in [[1,1,0,0],[1,1,0,1],[1,1,1,0],[1,1,1,1]]:
                         instr_valid = 0
                     if instr_valid:
                         Stat = [0,0]
@@ -74,7 +60,7 @@ def fetch(PC):
                     elif need_valC:
                         val_C.num = command[4:]
                     val_P = predict_PC(PC,need_regids,need_valC)
-                    return Stat,icode.num,ifun.num,rA,rB,val_C.num,val_P.num
+                    return Stat,icode,ifun,rA,rB,val_C,val_P
 
 
 
