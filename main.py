@@ -1,6 +1,7 @@
 from basic import *
 from Fetch import *
 from Decode import decode
+from Execute import execute
 """创建寄存器并定义其编号"""
 rax = Register()
 rcx = Register()
@@ -29,4 +30,6 @@ OF = 0
 CC = [ZF,SF,OF]
 Stat = [0,0]#状态码
 PC = Bin(64)#程序计数器
-print(decode(fetch(PC),reg))
+rax.from_decimal(9)
+rcx.from_decimal(-10)
+print(execute(decode(fetch(PC),reg)))

@@ -4,13 +4,15 @@
 from pathlib import Path
 from basic import *
 def predict_PC(PC,need_regids,need_valC):
+    eight = Bin(64)
+    eight.from_decimal(8)
     bits8 = Bin(64)
     bits64 = Bin(64)
     if need_regids:
         bits8.num = bits8.from_decimal(8)
     if need_valC:
         bits64.num = bits64.from_decimal(64)
-    return add(PC, add(bits8, bits64)[0])[0]
+    return add(add(PC, add(bits8, bits64)[0])[0],eight)[0]
 """这里在以后要加入溢出判断"""
 def fetch(PC):
     Stat = [0,0]
