@@ -25,6 +25,8 @@ def fetch(PC):
     instr_valid = 1 #是否合法
     need_regids = 0 #是否需要寄存器指示符
     need_valC = 0 #是否需要常数字
+    if PC.num[0] == 1:
+        Stat = [1,0] #ADR
     try:
         with open('Memory.txt', 'r') as file:
             pass
@@ -36,7 +38,7 @@ def fetch(PC):
             """此处可用seek函数进行优化"""
             for line in file:
                 if line[:64] == ''.join(map(str,PC.num)):  #寻找程序计数器对应的指令
-                    command = list(line)
+                    command = list(line.rstrip("\n"))
                     del command[:65] #提取出指令部分
                     command = list(map(int, command)) #将字符列表转化为整型列表
                     for i in range(4):

@@ -50,8 +50,8 @@ def cond(CC,ifun): #用于计算是否传送
         return (SF == OF)
     elif ifun.num == [0,1,1,0]: #大于时跳转
         return ((SF == OF) and ZF == 0)
-    else: return 0
-def execute(decode): #decode为decode函数的返回值，内容为(Stat,icode,ifun,valC,valA,valB,dstE,dstM)
+    else: return 1
+def execute(decode,CC): #decode为decode函数的返回值，内容为(Stat,icode,ifun,valC,valA,valB,dstE,dstM)
     Stat = decode[0]
     icode = decode[1]
     Cnd = 0
@@ -101,6 +101,9 @@ def execute(decode): #decode为decode函数的返回值，内容为(Stat,icode,i
         exit(0) #后期需修改这部分代码
     else:
         valE = result[1]
-        CC = result[2]
         Cnd = cond(CC, ifun)
-    return Stat, icode.num, Cnd, valE.to_decimal(), valA.to_decimal(), dstE, dstM
+        CC = result[2]
+        """重设dstE"""
+        if icode.num == [0,0,1,0] and (not Cnd): #cmovXX
+            dstE = [1,1,1,1]
+    return Stat, icode, Cnd, valE, valA, dstE, dstM, CC
