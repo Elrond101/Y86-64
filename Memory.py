@@ -30,6 +30,8 @@ def memory(execute): #execute为execute函数的返回值，内容为(Stat, icod
         Stat = [1,0] #ADR
 
     valM = Bin(64)
+    # 将内存地址转换为二进制字符串
+    addr_str = ''.join(map(str, mem_addr.num))
     if mem_read:
         with open('Memory.txt', 'r') as file:
             for line in file:
@@ -38,8 +40,50 @@ def memory(execute): #execute为execute函数的返回值，内容为(Stat, icod
                     data = list(line)[65:129]
                     valM.num = data
     elif mem_write:
-        with open('Memory.txt', 'w+r') as file:
-            for line in file:
-                if line[:64] == ''.join(map(str, mem_addr.num)):
-                    line.replace(line[65:129],mem_data.num)
-    return Stat, icode, valE, valM, dstE, dstM
+        with open('Memory.txt', 'r+b') as file:
+            # 移动到文件开头
+            file.seek(0)
+
+            found = False
+            data_str = ''.join(map(str, mem_data.num))
+            new_line = f"{addr_str}:{data_str}\n".encode('utf-8')
+
+            while True:
+                # 记录当前行开始位置
+                line_start = file.tell()
+
+                # 读取一行
+                line_bytes = file.readline()
+                if not line_bytes:  # 到达文件末尾
+                    break
+
+                # 解码为字符串
+                try:
+                    line = line_bytes.decode('utf-8').strip()
+                except UnicodeDecodeError:
+                    continue
+
+                # 跳过空行和注释
+                if not line or line.startswith('#'):
+                    continue
+
+                # 检查是否是有效的地址:数据行
+                if ':' in line:
+                    parts = line.split(':', 1)
+                    file_addr = parts[0].strip()
+
+                    # 如果找到匹配的地址
+                    if file_addr == addr_str:
+                        found = True
+                        # 移动到行开始位置
+                        file.seek(line_start)
+                        # 写入新行（确保长度相同）
+                        if len(new_line) > len(line_bytes):
+                            # 新行更长，需要截断
+                            file.write(new_line[:len(line_bytes)])
+                        else:
+                            # 新行更短或等长，填充空格
+                            file.write(new_line.ljust(len(line_bytes)))
+                        break
+
+    return Stat, icode, valE, valM.num, dstE, dstM

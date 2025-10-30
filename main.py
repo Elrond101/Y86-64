@@ -31,6 +31,8 @@ OF = 0
 CC = [ZF,SF,OF]
 Stat = [0,0]#状态码
 PC = Bin(64)#程序计数器
-rax.from_decimal(9)
+rax.from_decimal(0)
 rcx.from_decimal(0)
+
 print(memory(execute(decode(fetch(PC),reg),CC)))
+

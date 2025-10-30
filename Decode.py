@@ -15,7 +15,6 @@ def decode(fetch,reg): #fetch为fetch函数的返回值，0为Stat，1为icode�
     valP = fetch[6]
     valA = Bin(64)
     valB = Bin(64)
-    valC = Bin(64)
     srcA = [1,1,1,1]
     srcB = [1,1,1,1]
     dstE = [1,1,1,1]
