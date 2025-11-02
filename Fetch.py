@@ -3,7 +3,7 @@
 """从内存读取指令字节，地址为PC的值"""
 from pathlib import Path
 from basic import *
-def predict_PC(PC,need_regids,need_valC):
+def add_PC(PC,need_regids,need_valC):
     eight = Bin(64)
     eight.from_decimal(8)
     bits8 = Bin(64)
@@ -14,14 +14,20 @@ def predict_PC(PC,need_regids,need_valC):
         bits64.num = bits64.from_decimal(64)
     return add(add(PC, add(bits8, bits64)[0])[0],eight)[0]
 """这里在以后要加入溢出判断"""
+def pred_PC(icode,valC,valP):
+    if icode.num in [[1,0,0,0],[0,1,1,1]]:#call & jXX
+        return valC
+    else:
+        return valP
+    """未完成，还需要加入select PC"""
 def fetch(PC):
     Stat = [0,0]
     icode = Bin(4)
     ifun = Bin(4)
     rA = [1,1,1,1]
     rB = [1,1,1,1]
-    val_C = Bin(64)
-    val_P= PC
+    valC = Bin(64)
+    valP= PC
     instr_valid = 1 #是否合法
     need_regids = 0 #是否需要寄存器指示符
     need_valC = 0 #是否需要常数字
@@ -60,11 +66,12 @@ def fetch(PC):
                         rA = command[4:8]
                         rB = command[8:12]
                         if need_valC:
-                            val_C.num = command[12:]
+                            valC.num = command[12:]
                     elif need_valC:
-                        val_C.num = command[4:]
-                    val_P = predict_PC(PC,need_regids,need_valC)
-                    return Stat,icode,ifun,rA,rB,val_C,val_P
+                        valC.num = command[4:]
+                    valP = add_PC(PC,need_regids,need_valC)
+                    PC.modify(pred_PC(icode,valC,valP))
+                    return Stat,icode,ifun,rA,rB,valC,valP
 
 
 

@@ -86,4 +86,4 @@ def memory(execute): #execute为execute函数的返回值，内容为(Stat, icod
                             file.write(new_line.ljust(len(line_bytes)))
                         break
 
-    return Stat, icode, valE, valM.num, dstE, dstM
+    return Stat, icode, valE, valM, dstE, dstM

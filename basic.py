@@ -103,13 +103,15 @@ class Bin:
             for i in range(self.n):
                 result = result * 2 + temp_bin[i]
             return -result
+
+    def modify(self, bin):
+        for i in range(64):
+            self.num[i] = bin.num[i]
+
 """寄存器"""
 class Register(Bin):
     def __init__(self):
         super().__init__(64)
-    def modify(self,bin):
-        for i in range(64):
-            self.num[i] = bin.num[i]
 
 
 """与操作"""
