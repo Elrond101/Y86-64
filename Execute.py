@@ -83,7 +83,6 @@ def execute(decode,CC): #decode为decode函数的返回值，内容为(Stat,icod
         aluB = valB
     else:
         aluB = Bin(64)
-
     """设置alufun的值"""
     if icode.num == [0,1,1,0]:
         alufun = ifun

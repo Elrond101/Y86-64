@@ -19,7 +19,7 @@ def pred_PC(icode,valC,valP):
         return valC
     else:
         return valP
-    """未完成，还需要加入select PC"""
+"""未完成，还需要加入select PC"""
 def fetch(PC):
     Stat = [0,0]
     icode = Bin(4)
@@ -72,7 +72,8 @@ def fetch(PC):
                     valP = add_PC(PC,need_regids,need_valC)
                     PC.modify(pred_PC(icode,valC,valP))
                     return Stat,icode,ifun,rA,rB,valC,valP
-
+            icode.num = [0, 0, 0, 1]  # nop
+            return Stat, icode, ifun, rA, rB, valC, valP
 
 
 

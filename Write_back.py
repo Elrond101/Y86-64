@@ -9,3 +9,4 @@ def write_back(memory,reg): #memory为memory函数的返回值，内容为(Stat,
     """将数据写回对应寄存器"""
     reg[tuple(dstE)].modify(valE)
     reg[tuple(dstM)].modify(valM)
+    return Stat
