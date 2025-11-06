@@ -1,0 +1,10 @@
+irmovq $1,%rax
+irmovq $0,%rbx
+irmovq $2,%rcx
+loop:
+addq %rax,%rbx
+irmovq $1,%rdx
+addq %rdx,%rax
+subq %rdx,%rcx
+jg loop
+halt

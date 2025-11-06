@@ -3,7 +3,7 @@ from Decode import decode
 from Execute import execute
 from Memory import *
 from Write_back import write_back
-
+from assembler import assemble
 """创建寄存器并定义其编号"""
 rax = Register()
 rcx = Register()
@@ -34,6 +34,7 @@ Stat = [0, 0]  #状态码
 PC = Bin(64)  #程序计数器
 rax.from_decimal(0)
 rcx.from_decimal(0)
+assemble()
 D_data = fetch(PC)
 D_data, E_data = fetch(PC), decode(D_data, reg)
 D_data, E_data, M_data = fetch(PC), decode(D_data, reg), execute(E_data, CC)
@@ -41,7 +42,7 @@ CC = M_data[7]
 D_data, E_data, M_data, W_data = fetch(PC), decode(D_data, reg), execute(E_data, CC), memory(M_data)
 CC = M_data[7]
 while True:
-    print(rax.num)
+    print(rbx.num)
     i = input("Press enter to continue...")
     if i == "q":
         break
@@ -49,5 +50,5 @@ while True:
     CC = M_data[7]
     if W_data[0] == [0, 1]:
         break
-print(f"rax.num = {rax.num}")
-print(f"rcx.num = {rcx.num}")
+print(f"rbx.num = {rbx.to_decimal()}")
+
