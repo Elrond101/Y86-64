@@ -1,6 +1,7 @@
 from basic import *
-from Fetch import add_PC
-from pathlib import Path
+from main_parts.Fetch import add_PC
+
+
 def invalid_error():
     print("Your command is invalid.")
     exit(0)

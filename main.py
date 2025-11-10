@@ -1,8 +1,8 @@
-from Fetch import *
-from Decode import decode
-from Execute import execute
-from Memory import *
-from Write_back import write_back
+from main_parts.Fetch import *
+from main_parts.Decode import decode
+from main_parts.Execute import execute
+from main_parts.Memory import *
+from main_parts.Write_back import write_back
 from assembler import assemble
 """创建寄存器并定义其编号"""
 rax = Register()
@@ -35,20 +35,34 @@ PC = Bin(64)  #程序计数器
 rax.from_decimal(0)
 rcx.from_decimal(0)
 assemble()
-D_data = fetch(PC)
-D_data, E_data = fetch(PC), decode(D_data, reg)
-D_data, E_data, M_data = fetch(PC), decode(D_data, reg), execute(E_data, CC)
-CC = M_data[7]
-D_data, E_data, M_data, W_data = fetch(PC), decode(D_data, reg), execute(E_data, CC), memory(M_data)
-CC = M_data[7]
+"""初始化流水线寄存器"""
+begin_stat = [0,0]
+begin_code = Bin(4)
+begin_code.num = [0,0,0,1]
+Cnd = 1
+begin_num64 = Bin(64)
+begin_reg = Bin(4)
+begin_reg.num = [1,1,1,1]
+begin_CC = [0,0,0]
+D_data = (begin_stat, begin_code, begin_code, begin_reg, begin_reg, begin_num64, begin_num64)
+E_data = (begin_stat,begin_code,begin_code,begin_num64,begin_num64,begin_num64,begin_reg.num,begin_reg.num)
+M_data = (begin_stat, begin_code, Cnd, begin_num64, begin_num64, begin_reg.num, begin_reg.num, begin_CC)
+W_data = (begin_stat, begin_code, begin_num64, begin_num64, begin_reg.num, begin_reg.num)
 while True:
     print(rbx.num)
-    i = input("Press enter to continue...")
-    if i == "q":
-        break
-    D_data, E_data, M_data, W_data, F_data= fetch(PC), decode(D_data, reg), execute(E_data, CC), memory(M_data), write_back(W_data,reg)
+    #i = input("Press enter to continue...")
+    #if i == "q":
+        #break
+    D_data, E_data, M_data, W_data, F_data = fetch(PC), decode(D_data, reg), execute(E_data, CC), memory(M_data), write_back(W_data,reg)
+    """分支预测错误的处理"""
     CC = M_data[7]
     if W_data[0] == [0, 1]:
         break
+    Cnd = M_data[2]
+    if (M_data[1].num == [0,1,1,1]) and (not Cnd):
+        M_valA = M_data[4] #读出下一条指令的地址
+        PC.modify(M_valA)
+        D_data = fetch(PC)
+        D_data, E_data = fetch(PC), decode(D_data, reg) #重新写入正确指令
 print(f"rbx.num = {rbx.to_decimal()}")
 

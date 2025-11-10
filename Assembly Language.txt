@@ -1,9 +1,18 @@
 irmovq $1,%rax
 irmovq $0,%rbx
-irmovq $2,%rcx
+irmovq $10,%rcx
 loop:
+nop
+nop
+nop
+nop
+nop
 addq %rax,%rbx
 irmovq $1,%rdx
+nop
+nop
+nop
+nop
 addq %rdx,%rax
 subq %rdx,%rcx
 jg loop

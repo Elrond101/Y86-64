@@ -1,18 +1,17 @@
 """取指"""
 
 """从内存读取指令字节，地址为PC的值"""
-from pathlib import Path
 from basic import *
 def add_PC(PC,need_regids,need_valC):
-    eight = Bin(64)
-    eight.from_decimal(8)
+    one = Bin(64)
+    one.from_decimal(1)
+    bits1 = Bin(64)
     bits8 = Bin(64)
-    bits64 = Bin(64)
     if need_regids:
-        bits8.num = bits8.from_decimal(8)
+        bits1.num = bits1.from_decimal(1)
     if need_valC:
-        bits64.num = bits64.from_decimal(64)
-    return add(add(PC, add(bits8, bits64)[0])[0],eight)[0]
+        bits8.num = bits8.from_decimal(8)
+    return add(add(PC, add(bits1, bits8)[0])[0],one)[0]
 """这里在以后要加入溢出判断"""
 def pred_PC(icode,valC,valP):
     if icode.num in [[1,0,0,0],[0,1,1,1]]:#call & jXX

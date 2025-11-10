@@ -1,10 +1,10 @@
 """执行"""
 
 from basic import *
-def alu(alufun,aluA,aluB,set_cc):
-    ZF = 0
-    SF = 0
-    OF = 0
+def alu(alufun,aluA,aluB,set_cc,CC):
+    ZF = CC[0]
+    SF = CC[1]
+    OF = CC[2]
     Stat = [0,0]
     if alufun.num == [0,0,0,0]: #加法
         result = add(aluB,aluA)
@@ -54,7 +54,7 @@ def cond(CC,ifun): #用于计算是否传送
 def execute(decode,CC): #decode为decode函数的返回值，内容为(Stat,icode,ifun,valC,valA,valB,dstE,dstM)
     Stat = decode[0]
     icode = decode[1]
-    Cnd = 0
+    Cnd = 1
     valE =  Bin(64)
     valA = decode[4]
     dstE = decode[6]
@@ -95,12 +95,13 @@ def execute(decode,CC): #decode为decode函数的返回值，内容为(Stat,icod
     else:
         set_cc = False
 
-    result = alu(alufun,aluA,aluB,set_cc)
+    result = alu(alufun,aluA,aluB,set_cc,CC)
     if result[0] == [1, 1]:  # INS
         exit(0) #后期需修改这部分代码
     else:
         valE = result[1]
-        Cnd = cond(CC, ifun)
+        if icode.num == [0,1,1,1]:
+            Cnd = cond(CC, ifun)
         CC = result[2]
         """重设dstE"""
         if icode.num == [0,0,1,0] and (not Cnd): #cmovXX

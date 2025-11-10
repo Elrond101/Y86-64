@@ -1,4 +1,3 @@
-from basic import *
 def write_back(memory,reg): #memory为memory函数的返回值，内容为(Stat, icode, valE, valM, dstE, dstM)
     Stat = memory[0]
     valE = memory[2]

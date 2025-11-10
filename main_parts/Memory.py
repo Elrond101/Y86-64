@@ -17,12 +17,7 @@ def memory(execute): #execute为execute函数的返回值，内容为(Stat, icod
     else:
         mem_addr = Bin(64)
     """设置内存内容"""
-    if icode.num in [[0,1,0,0],[1,0,1,0]]:
-        mem_data = valA
-    elif icode.num == [1,0,0,0]:
-        mem_data = valP
-    else:
-        mem_data = Bin(64)
+    mem_data = valA
     """更新Stat"""
     if icode.num == [0,0,0,0]:
         Stat = [0,1] #HLT
