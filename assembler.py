@@ -1,6 +1,6 @@
 from basic import *
 from main_parts.Fetch import add_PC
-
+from Stack_and_heap import *
 
 def invalid_error():
     print("Your command is invalid.")
@@ -162,7 +162,8 @@ def assemble():
                                         invalid_error()
                                 else:
                                     invalid_error()
-
+                            else:
+                                invalid_error()
 
                         write_in(PC,command,memory_file)
                         PC = add_PC(PC,need_regids,need_valC)
@@ -177,4 +178,6 @@ def assemble():
                             for i in range(l_len):
                                 memory_file.seek(address_values[i])
                                 memory_file.write(label[address_keys[i]])
+            PC = create_heap(PC,memory_file)
+            PC = create_stack(PC,memory_file)
     return PC

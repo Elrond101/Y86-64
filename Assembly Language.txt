@@ -1,19 +1,18 @@
-irmovq $1,%rax
-irmovq $0,%rbx
-irmovq $10,%rcx
+irmovq $5,%rdi
+irmovq $0,%rax
+irmovq $5,%rsi
 loop:
 nop
 nop
 nop
 nop
-nop
-addq %rax,%rbx
-irmovq $1,%rdx
-nop
+addq %rdi,%rax
+irmovq $1,%r8
 nop
 nop
 nop
-addq %rdx,%rax
-subq %rdx,%rcx
+nop
+subq %r8,%rsi
 jg loop
 halt
+

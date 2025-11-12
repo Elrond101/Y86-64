@@ -32,7 +32,7 @@ def memory(execute): #execute为execute函数的返回值，内容为(Stat, icod
             for line in file:
                 """这里存在一个很大的问题，就是如果访问地址是在两个地址之间，无法读取，未来需要修复"""
                 if line[:64] == ''.join(map(str,mem_addr.num)):  #寻找内存地址对应的指令
-                    data = list(line)[65:129]
+                    data = list(map(int,list(line)[65:129]))
                     valM.num = data
     elif mem_write:
         with open('Memory.txt', 'r+b') as file:

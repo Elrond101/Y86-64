@@ -34,7 +34,7 @@ Stat = [0, 0]  #状态码
 PC = Bin(64)  #程序计数器
 rax.from_decimal(0)
 rcx.from_decimal(0)
-assemble()
+rsp = assemble() #初始化栈指针
 """初始化流水线寄存器"""
 begin_stat = [0,0]
 begin_code = Bin(4)
@@ -49,7 +49,7 @@ E_data = (begin_stat,begin_code,begin_code,begin_num64,begin_num64,begin_num64,b
 M_data = (begin_stat, begin_code, Cnd, begin_num64, begin_num64, begin_reg.num, begin_reg.num, begin_CC)
 W_data = (begin_stat, begin_code, begin_num64, begin_num64, begin_reg.num, begin_reg.num)
 while True:
-    print(rbx.num)
+    print(f"rax.num = {rax.to_decimal()}")
     #i = input("Press enter to continue...")
     #if i == "q":
         #break
@@ -59,10 +59,20 @@ while True:
     if W_data[0] == [0, 1]:
         break
     Cnd = M_data[2]
+    if D_data[1] == [1,0,0,1]: #ret
+        """插入三个bubble"""
+        for i in range(3):
+            D_data, E_data, M_data, W_data, F_data = (begin_stat, begin_code, begin_code, begin_reg, begin_reg, begin_num64, begin_num64),\
+            decode(D_data, reg), execute(E_data, CC), memory(M_data), write_back(W_data, reg)
     if (M_data[1].num == [0,1,1,1]) and (not Cnd):
         M_valA = M_data[4] #读出下一条指令的地址
         PC.modify(M_valA)
         D_data = fetch(PC)
         D_data, E_data = fetch(PC), decode(D_data, reg) #重新写入正确指令
-print(f"rbx.num = {rbx.to_decimal()}")
+    elif (W_data[1].num == [1,0,0,1]):
+        W_valM = W_data[3]
+        PC.modify(W_valM)
+print(f"rax.num = {rax.to_decimal()}")
+print(f"rdi.num = {rdi.to_decimal()}")
+print(f"rsi.num = {rsi.to_decimal()}")
 
