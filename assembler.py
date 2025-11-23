@@ -133,7 +133,7 @@ def assemble():
                                     address[statement[1]] = position  # 记录下跳转的位置，最后进行修改
                                     command = '0' * 64  # 为地址留下位置
                                     memory_file.write(''.join([command, '\n']))
-                                    PC = add_PC(PC, need_regids, need_valC)
+                                    PC.num = add_PC(PC, need_regids, need_valC).num
                                     continue
                                 elif statement[0] in ["irmovq","rmmovq","mrmovq"]:
                                     need_regids = 1
@@ -166,7 +166,7 @@ def assemble():
                                 invalid_error()
 
                         write_in(PC,command,memory_file)
-                        PC = add_PC(PC,need_regids,need_valC)
+                        PC.num = add_PC(PC,need_regids,need_valC).num
                     """处理函数以及跳转标识"""
                     if label and address: #label—— name:address  address—— name:position
                         if len(label) != len(address):
@@ -178,6 +178,6 @@ def assemble():
                             for i in range(l_len):
                                 memory_file.seek(address_values[i])
                                 memory_file.write(label[address_keys[i]])
-            PC = create_heap(PC,memory_file)
-            PC = create_stack(PC,memory_file)
+            PC.num = create_heap(PC,memory_file).num
+            PC.num = create_stack(PC,memory_file).num
     return PC

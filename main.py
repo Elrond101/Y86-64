@@ -34,7 +34,7 @@ Stat = [0, 0]  #状态码
 PC = Bin(64)  #程序计数器
 rax.from_decimal(0)
 rcx.from_decimal(0)
-rsp = assemble() #初始化栈指针
+rsp.num = assemble().num #初始化栈指针
 """初始化流水线寄存器"""
 begin_stat = [0,0]
 begin_code = Bin(4)
@@ -50,6 +50,9 @@ M_data = (begin_stat, begin_code, Cnd, begin_num64, begin_num64, begin_reg.num, 
 W_data = (begin_stat, begin_code, begin_num64, begin_num64, begin_reg.num, begin_reg.num)
 while True:
     print(f"rax.num = {rax.to_decimal()}")
+    print(f"rdi.num = {rdi.to_decimal()}")
+    print(f"rsi.num = {rsi.to_decimal()}")
+    print(PC.num)
     #i = input("Press enter to continue...")
     #if i == "q":
         #break
@@ -59,7 +62,7 @@ while True:
     if W_data[0] == [0, 1]:
         break
     Cnd = M_data[2]
-    if D_data[1] == [1,0,0,1]: #ret
+    if D_data[1].num == [1,0,0,1]: #ret
         """插入三个bubble"""
         for i in range(3):
             D_data, E_data, M_data, W_data, F_data = (begin_stat, begin_code, begin_code, begin_reg, begin_reg, begin_num64, begin_num64),\
@@ -75,4 +78,3 @@ while True:
 print(f"rax.num = {rax.to_decimal()}")
 print(f"rdi.num = {rdi.to_decimal()}")
 print(f"rsi.num = {rsi.to_decimal()}")
-

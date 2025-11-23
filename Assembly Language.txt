@@ -1,18 +1,29 @@
 irmovq $5,%rdi
+nop
+nop
+nop
+nop
+call double
+irmovq $10,%rsi
+call multiply
+halt
+
+double:
+addq %rdi,%rdi
+ret
+
+multiply:
 irmovq $0,%rax
-irmovq $5,%rsi
-loop:
-nop
-nop
-nop
-nop
-addq %rdi,%rax
 irmovq $1,%r8
+nop
+nop
+nop
+loop:
+addq %rdi,%rax
 nop
 nop
 nop
 nop
 subq %r8,%rsi
 jg loop
-halt
-
+ret

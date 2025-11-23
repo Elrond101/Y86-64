@@ -41,7 +41,7 @@ def memory(execute): #execute为execute函数的返回值，内容为(Stat, icod
 
             found = False
             data_str = ''.join(map(str, mem_data.num))
-            new_line = f"{addr_str}:{data_str}\n".encode('utf-8')
+            new_line = f"{addr_str}:{data_str}".encode('utf-8')
 
             while True:
                 # 记录当前行开始位置
@@ -54,7 +54,7 @@ def memory(execute): #execute为execute函数的返回值，内容为(Stat, icod
 
                 # 解码为字符串
                 try:
-                    line = line_bytes.decode('utf-8').strip()
+                    line = line_bytes.decode('utf-8')
                 except UnicodeDecodeError:
                     continue
 
@@ -72,13 +72,8 @@ def memory(execute): #execute为execute函数的返回值，内容为(Stat, icod
                         found = True
                         # 移动到行开始位置
                         file.seek(line_start)
-                        # 写入新行（确保长度相同）
-                        if len(new_line) > len(line_bytes):
-                            # 新行更长，需要截断
-                            file.write(new_line[:len(line_bytes)])
-                        else:
-                            # 新行更短或等长，填充空格
-                            file.write(new_line.ljust(len(line_bytes)))
+                        file.write(new_line[:])
+                        file.flush()
                         break
 
     return Stat, icode, valE, valM, dstE, dstM

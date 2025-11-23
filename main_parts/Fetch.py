@@ -13,12 +13,13 @@ def add_PC(PC,need_regids,need_valC):
         bits8.num = bits8.from_decimal(8)
     return add(add(PC, add(bits1, bits8)[0])[0],one)[0]
 """这里在以后要加入溢出判断"""
-def pred_PC(icode,valC,valP):
+def pred_PC(icode,valC,valP,PC):
     if icode.num in [[1,0,0,0],[0,1,1,1]]:#call & jXX
         return valC
+    elif icode.num == [0,0,0,0]: #halt
+        return PC
     else:
         return valP
-"""未完成，还需要加入select PC"""
 def fetch(PC):
     Stat = [0,0]
     icode = Bin(4)
@@ -50,6 +51,8 @@ def fetch(PC):
                         icode.num[i] = command.pop(0)
 
                     """提取指令中的信息"""
+                    if icode.num == [0,0,0,0]: #halt
+                        Stat = [0,1] #HLT
                     if icode.num in [[0,0,1,0],[0,0,1,1],[0,1,0,0],[0,1,0,1],[0,1,1,0],[1,0,1,0],[1,0,1,1]]:
                         need_regids = 1
                     if icode.num in [[0,0,1,1],[0,1,0,0],[0,1,0,1],[0,1,1,1],[1,0,0,0]]:
@@ -69,7 +72,7 @@ def fetch(PC):
                     elif need_valC:
                         valC.num = command[4:]
                     valP = add_PC(PC,need_regids,need_valC)
-                    PC.modify(pred_PC(icode,valC,valP))
+                    PC.modify(pred_PC(icode,valC,valP,PC))
                     return Stat,icode,ifun,rA,rB,valC,valP
             icode.num = [0, 0, 0, 1]  # nop
             return Stat, icode, ifun, rA, rB, valC, valP
