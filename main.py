@@ -1,3 +1,4 @@
+from basic import Register
 from main_parts.Fetch import *
 from main_parts.Decode import decode
 from main_parts.Execute import execute
@@ -35,6 +36,15 @@ PC = Bin(64)  #程序计数器
 rax.from_decimal(0)
 rcx.from_decimal(0)
 rsp.num = assemble().num #初始化栈指针
+"""寄存器重命名"""
+P0 = Register()
+P1 = Register()
+P2 = Register()
+P3 = Register()
+P4 = Register()
+empty_names = [P0,P1,P2,P3,P4] #空闲的物理寄存器
+value_key = {} #寄存器与物理寄存器的对应关系
+reg_renaming = [empty_names, value_key]
 """初始化流水线寄存器"""
 begin_stat = [0,0]
 begin_code = Bin(4)
@@ -72,7 +82,7 @@ while True:
         PC.modify(M_valA)
         D_data = fetch(PC)
         D_data, E_data = fetch(PC), decode(D_data, reg) #重新写入正确指令
-    elif (W_data[1].num == [1,0,0,1]):
+    elif W_data[1].num == [1, 0, 0, 1]:
         W_valM = W_data[3]
         PC.modify(W_valM)
 print(f"rax.num = {rax.to_decimal()}")

@@ -1,5 +1,4 @@
 """定义基本二进制移位运算与加减法"""
-from unittest import result
 
 from logic import *
 """二进制数"""
