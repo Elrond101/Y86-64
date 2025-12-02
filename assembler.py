@@ -63,7 +63,7 @@ def assemble():
                                 if statement[0] in ["rrmovq","addq","subq",
                                                     "andq","xorq","cmovle",
                                                     "cmovl","cmove","cmovne",
-                                                    "cmovge","comvg","pushq",
+                                                    "cmovge","cmovg","pushq",
                                                     "popq"]:
                                     need_regids = 1
                                     need_valC = 0
@@ -101,7 +101,7 @@ def assemble():
                                     elif statement[0] == "cmovge":
                                         command = "00100101" + translate_reg(statement[1].split(',')[0])\
                                                   + translate_reg(statement[1].split(',')[1])
-                                    elif statement[0] == "comvg":
+                                    elif statement[0] == "cmovg":
                                         command = "00100110" + translate_reg(statement[1].split(',')[0])\
                                                   + translate_reg(statement[1].split(',')[1])
                                     else:

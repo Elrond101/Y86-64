@@ -1,29 +1,7 @@
-irmovq $5,%rdi
-nop
-nop
-nop
-nop
-call double
-irmovq $10,%rsi
-call multiply
+irmovq $5,%rax
+irmovq $10,%rbx
+irmovq $1,%rcx
+irmovq $0,%rdx
+subq %rbx,%rax
+cmovg %rcx,%rdx
 halt
-
-double:
-addq %rdi,%rdi
-ret
-
-multiply:
-irmovq $0,%rax
-irmovq $1,%r8
-nop
-nop
-nop
-loop:
-addq %rdi,%rax
-nop
-nop
-nop
-nop
-subq %r8,%rsi
-jg loop
-ret

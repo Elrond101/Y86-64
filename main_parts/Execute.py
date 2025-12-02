@@ -1,5 +1,4 @@
 """执行"""
-
 from basic import *
 def alu(alufun,aluA,aluB,set_cc,CC):
     ZF = CC[0]
@@ -63,31 +62,26 @@ def execute(decode,CC): #decode为decode函数的返回值，内容为(Stat,icod
     ifun = decode[2]
     valC = decode[3]
     valB = decode[5]
+    aluA = Bin(64)
+    aluB = Bin(64)
+    alufun = Bin(4)
 
     """设置aluA的值"""
     if icode.num in[[0,0,1,0],[0,1,1,0]]:
-        aluA = valA
+        aluA.num = valA.num
     elif icode.num in[[0,0,1,1],[0,1,0,0],[0,1,0,1]]:
-        aluA = valC
+        aluA.num = valC.num
     elif icode.num in [[1,0,0,1],[1,0,1,1]]:
-        aluA = Bin(64)
         aluA.from_decimal(8) #将aluA设置为8
     elif icode.num in [[1,0,0,0],[1,0,1,0]]:
-        aluA = Bin(64)
         aluA.from_decimal(-8)
-    else:
-        aluA = Bin(64)
 
     """设置aluB的值"""
     if icode.num in [[0,1,0,0],[0,1,0,1],[0,1,1,0],[1,0,0,0],[1,0,0,1],[1,0,1,0],[1,0,1,1]]:
-        aluB = valB
-    else:
-        aluB = Bin(64)
+        aluB.num = valB.num
     """设置alufun的值"""
     if icode.num == [0,1,1,0]:
-        alufun = ifun
-    else:
-        alufun = Bin(4) #设置为add的fun
+        alufun.num = ifun.num
 
     """设置set_cc的值"""
     if icode.num == [0,1,1,0]:
@@ -99,8 +93,8 @@ def execute(decode,CC): #decode为decode函数的返回值，内容为(Stat,icod
     if result[0] == [1, 1]:  # INS
         exit(0) #后期需修改这部分代码
     else:
-        valE = result[1]
-        if icode.num == [0,1,1,1]:
+        valE.num = result[1].num
+        if icode.num in [[0,1,1,1],[0,0,1,0]]:
             Cnd = cond(CC, ifun)
         CC = result[2]
         """重设dstE"""

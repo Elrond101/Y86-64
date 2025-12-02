@@ -1,4 +1,3 @@
-from basic import Register
 from main_parts.Fetch import *
 from main_parts.Decode import decode
 from main_parts.Execute import execute
@@ -36,47 +35,64 @@ PC = Bin(64)  #程序计数器
 rax.from_decimal(0)
 rcx.from_decimal(0)
 rsp.num = assemble().num #初始化栈指针
-"""寄存器重命名"""
-P0 = Register()
-P1 = Register()
-P2 = Register()
-P3 = Register()
-P4 = Register()
-empty_names = [P0,P1,P2,P3,P4] #空闲的物理寄存器
-value_key = {} #寄存器与物理寄存器的对应关系
-reg_renaming = [empty_names, value_key]
 """初始化流水线寄存器"""
 begin_stat = [0,0]
 begin_code = Bin(4)
 begin_code.num = [0,0,0,1]
 Cnd = 1
 begin_num64 = Bin(64)
-begin_reg = Bin(4)
-begin_reg.num = [1,1,1,1]
+begin_reg = [1,1,1,1]
 begin_CC = [0,0,0]
 D_data = (begin_stat, begin_code, begin_code, begin_reg, begin_reg, begin_num64, begin_num64)
-E_data = (begin_stat,begin_code,begin_code,begin_num64,begin_num64,begin_num64,begin_reg.num,begin_reg.num)
-M_data = (begin_stat, begin_code, Cnd, begin_num64, begin_num64, begin_reg.num, begin_reg.num, begin_CC)
-W_data = (begin_stat, begin_code, begin_num64, begin_num64, begin_reg.num, begin_reg.num)
+E_data = (begin_stat,begin_code,begin_code,begin_num64,begin_num64,begin_num64,begin_reg,begin_reg)
+M_data = (begin_stat, begin_code, Cnd, begin_num64, begin_num64, begin_reg, begin_reg, begin_CC)
+W_data = (begin_stat, begin_code, begin_num64, begin_num64, begin_reg, begin_reg)
 while True:
-    print(f"rax.num = {rax.to_decimal()}")
-    print(f"rdi.num = {rdi.to_decimal()}")
-    print(f"rsi.num = {rsi.to_decimal()}")
-    print(PC.num)
     #i = input("Press enter to continue...")
     #if i == "q":
         #break
+    """处理数据冒险"""
+    if (D_data[3] != [1,1,1,1] and D_data[3] in [E_data[6],E_data[7],M_data[5],M_data[6],W_data[4],W_data[5]])\
+    or (D_data[4] != [1,1,1,1] and D_data[4] in [E_data[6],E_data[7],M_data[5],M_data[6],W_data[4],W_data[5]]):
+        empty_D_data = (begin_stat, begin_code, begin_code, begin_reg, begin_reg, begin_num64, begin_num64)
+        E_data, M_data, W_data, F_data = decode(empty_D_data, reg), execute(E_data, CC), memory(M_data), write_back(W_data, reg) #插入一个bubble
+        """分支预测错误的处理"""
+        CC = M_data[7]
+        if W_data[0] == [0, 1]:
+            break
+        Cnd = M_data[2]
+        if D_data[1].num == [1, 0, 0, 1] or E_data[1].num == [1, 0, 0, 1] or M_data[1].num == [1, 0, 0, 1]:  # ret
+            """插入bubble"""
+            D_data, E_data, M_data, W_data, F_data = (begin_stat, begin_code, begin_code, begin_reg, begin_reg,
+                                                      begin_num64, begin_num64), \
+                decode(D_data, reg), execute(E_data, CC), memory(M_data), write_back(W_data, reg)
+            CC = M_data[7]
+            if W_data[0] == [0, 1]:
+                break
+            Cnd = M_data[2]
+        if (M_data[1].num == [0, 1, 1, 1]) and (not Cnd):
+            M_valA = M_data[4]  # 读出下一条指令的地址
+            PC.modify(M_valA)
+            D_data = fetch(PC)
+            D_data, E_data = fetch(PC), decode(D_data, reg)  # 重新写入正确指令
+        elif W_data[1].num == [1, 0, 0, 1]:
+            W_valM = W_data[3]
+            PC.modify(W_valM)
+        continue
     D_data, E_data, M_data, W_data, F_data = fetch(PC), decode(D_data, reg), execute(E_data, CC), memory(M_data), write_back(W_data,reg)
     """分支预测错误的处理"""
     CC = M_data[7]
     if W_data[0] == [0, 1]:
         break
     Cnd = M_data[2]
-    if D_data[1].num == [1,0,0,1]: #ret
-        """插入三个bubble"""
-        for i in range(3):
-            D_data, E_data, M_data, W_data, F_data = (begin_stat, begin_code, begin_code, begin_reg, begin_reg, begin_num64, begin_num64),\
-            decode(D_data, reg), execute(E_data, CC), memory(M_data), write_back(W_data, reg)
+    if D_data[1].num == [1,0,0,1] or E_data[1].num == [1,0,0,1] or M_data[1].num == [1,0,0,1]: #ret
+        """插入bubble"""
+        D_data, E_data, M_data, W_data, F_data = (begin_stat, begin_code, begin_code, begin_reg, begin_reg, begin_num64, begin_num64),\
+        decode(D_data, reg), execute(E_data, CC), memory(M_data), write_back(W_data, reg)
+        CC = M_data[7]
+        if W_data[0] == [0, 1]:
+            break
+        Cnd = M_data[2]
     if (M_data[1].num == [0,1,1,1]) and (not Cnd):
         M_valA = M_data[4] #读出下一条指令的地址
         PC.modify(M_valA)
@@ -86,5 +102,6 @@ while True:
         W_valM = W_data[3]
         PC.modify(W_valM)
 print(f"rax.num = {rax.to_decimal()}")
-print(f"rdi.num = {rdi.to_decimal()}")
-print(f"rsi.num = {rsi.to_decimal()}")
+print(f"rbx.num = {rbx.to_decimal()}")
+print(f"rcx.num = {rcx.to_decimal()}")
+print(f"rdx.num = {rdx.to_decimal()}")
