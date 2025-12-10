@@ -1,7 +1,19 @@
-irmovq $5,%rax
-irmovq $10,%rbx
-irmovq $1,%rcx
-irmovq $0,%rdx
-subq %rbx,%rax
-cmovg %rcx,%rdx
+irmovq $10,%rdi
+call sum
 halt
+sum:
+irmovq $1,%r8
+irmovq $0,%rax
+subq %rdi,%r8
+jge base
+pushq %rbx
+rrmovq %rdi,%rbx
+irmovq $1,%r8
+subq %r8,%rdi
+call sum
+addq %rbx,%rax
+popq %rbx
+ret
+base:
+addq %rdi,%rax
+ret

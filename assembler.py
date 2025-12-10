@@ -68,9 +68,9 @@ def assemble():
                                     need_regids = 1
                                     need_valC = 0
                                     if statement[0] == "pushq":
-                                        command = "1010" + translate_reg(statement[1]) + "1111"
+                                        command = "10100000" + translate_reg(statement[1]) + "1111"
                                     elif statement[0] == "popq":
-                                        command = "1011" + translate_reg(statement[1]) + "1111"
+                                        command = "10110000" + translate_reg(statement[1]) + "1111"
                                     elif statement[0] == "rrmovq":
                                         command = "00100000" + translate_reg(statement[1].split(',')[0])\
                                                   + translate_reg(statement[1].split(',')[1])
@@ -130,7 +130,10 @@ def assemble():
                                         invalid_error()
                                     memory_file.write(''.join([''.join(map(str, PC.num)), ':', command]))
                                     position = memory_file.tell()
-                                    address[statement[1]] = position  # 记录下跳转的位置，最后进行修改
+                                    try:
+                                        address[statement[1]].append(position)# 记录下跳转的位置，最后进行修改
+                                    except KeyError:
+                                        address[statement[1]] = [position]
                                     command = '0' * 64  # 为地址留下位置
                                     memory_file.write(''.join([command, '\n']))
                                     PC.num = add_PC(PC, need_regids, need_valC).num
@@ -176,8 +179,10 @@ def assemble():
                             address_keys = list(address.keys())
                             address_values = list(address.values())
                             for i in range(l_len):
-                                memory_file.seek(address_values[i])
-                                memory_file.write(label[address_keys[i]])
+                                v_len = len(address_values[i])
+                                for j in range(v_len):
+                                    memory_file.seek(address_values[i][j])
+                                    memory_file.write(label[address_keys[i]])
             PC.num = create_heap(PC,memory_file).num
             PC.num = create_stack(PC,memory_file).num
     return PC
