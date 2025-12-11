@@ -11,7 +11,7 @@ def help_list():
 def help_assemble():
     content = """
     汇编（默认同时运行）Assembly Language.txt中的汇编代码
-    用法：assemble [-no] [-h] [-i|-t xxx [-pc] [-r] [-c]] [-all]
+    用法：assemble [-no] [-h] [[[-pc] [-r] [-c]] -i|-t xxx]
     
         没有参数                     按默认方式汇编并运行程序
         -no                        不运行程序，只编译输出二进制程序
@@ -21,13 +21,12 @@ def help_assemble():
         -pc                        每一步显示当前取指阶段的指令的地址，以十六进制显示
         -r                         每一步显示被修改过的所有寄存器的值，以十进制显示
         -c                         每一步显示当前指令的内容
-        -all                       运行结束后显示所有寄存器的值，默认显示修改过的所有寄存器的值
     """
     print(content)
 def help_operate():
     content = """
     运行Memory.txt中的二进制代码并忽略汇编代码 
-    用法：operate [-h] [-i|-t xxx [-pc] [-r] [-c]] [-all]
+    用法：operate [-h] [[[-pc] [-r] [-c]] -i|-t xxx]
     
         没有参数                     按默认方式运行程序
         -h                         生成十六进制代码，输出到Memory_Hex.txt
@@ -36,6 +35,5 @@ def help_operate():
         -pc                        每一步显示当前取指阶段的指令的地址，以十六进制显示
         -r                         每一步显示被修改过的所有寄存器的值，以十进制显示
         -c                         每一步显示当前指令的内容
-        -all                       运行结束后显示所有寄存器的值，默认显示修改过的所有寄存器的值
     """
     print(content)

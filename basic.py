@@ -103,15 +103,37 @@ class Bin:
                 result = result * 2 + temp_bin[i]
             return -result
 
+    def to_hex(self):
+        binary_str = ''.join(str(bit) for bit in self.num)
+
+        remainder = len(binary_str) % 4
+        if remainder != 0:
+            binary_str = '0' * (4 - remainder) + binary_str
+
+        #  创建二进制到十六进制的映射字典
+        bin_to_hex = {
+            '0000': '0', '0001': '1', '0010': '2', '0011': '3',
+            '0100': '4', '0101': '5', '0110': '6', '0111': '7',
+            '1000': '8', '1001': '9', '1010': 'A', '1011': 'B',
+            '1100': 'C', '1101': 'D', '1110': 'E', '1111': 'F'
+        }
+
+        # 将二进制字符串分组并转换为十六进制
+        hex_str = ''
+        for i in range(0, len(binary_str), 4):
+            four_bits = binary_str[i:i + 4]
+            hex_str += bin_to_hex[four_bits]
+
+        return "0x" + hex_str
     def modify(self, bin):
         for i in range(64):
             self.num[i] = bin.num[i]
 
 """寄存器"""
 class Register(Bin):
-    def __init__(self):
+    def __init__(self,name):
         super().__init__(64)
-
+        self.name = name
 
 """与操作"""
 def and_bin(a,b):
