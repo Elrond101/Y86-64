@@ -34,7 +34,7 @@ reg_tag = 0
 com_tag = 0
 open_file("Assembly Language.txt")
 while True:
-    command = input()
+    command = input(">>")
     if command == "help":
         help_all()
     elif command[:4] == "help":
