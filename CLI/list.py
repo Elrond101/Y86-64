@@ -1,4 +1,4 @@
-def list():
+def show_list():
     content = """
     halt                             停止处理器执行
     nop                              无操作

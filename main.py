@@ -1,6 +1,7 @@
 import time
 from CLI.help import *
 from CLI.list import *
+from CLI.show_com import *
 from assembler import assemble
 from assembly_line import *
 from Memory_to_hex import *
@@ -43,7 +44,7 @@ while True:
         elif command[-8:] == "assemble":
             help_assemble()
     elif command[:4] == "list":
-        list()
+        show_list()
     elif command[:8] == "assemble":
         if "-no" in command:
             operate_tag = 0
@@ -109,6 +110,7 @@ reg = {(0, 0, 0, 0): rax, (0, 0, 0, 1): rcx, (0, 0, 1, 0): rdx, (0, 0, 1, 1): rb
        (0, 1, 0, 0): rsp, (0, 1, 0, 1): rbp, (0, 1, 1, 0): rsi, (0, 1, 1, 1): rdi,
        (1, 0, 0, 0): r8, (1, 0, 0, 1): r9, (1, 0, 1, 0): r10, (1, 0, 1, 1): r11,
        (1, 1, 0, 0): r12, (1, 1, 0, 1): r13, (1, 1, 1, 0): r14, (1, 1, 1, 1): no_reg}
+names = list(reg.values())[:-1]
 """零、符号和溢出条件码"""
 ZF = 0
 SF = 0
@@ -141,6 +143,17 @@ data = [D_data, E_data, M_data, W_data, F_data, PC, CC, Cnd, reg]
 tag = [1]
 if operate_tag:
     while tag[0]:
+        l = Lines(data)
+        tag = l.one_step()
+        data = tag[1][:]
+        if pc_tag:
+            print(f"PC:{PC.to_hex()} ")
+        if reg_tag:
+            for r in names:
+                if r.to_decimal():
+                    print(f"%{r.name} = {r.to_decimal()}")
+        if com_tag:
+            show_com(data[0][1],data[0][2])
         if input_tag:
             i = input("Press enter to continue...\n")
             if i == "q":
@@ -148,14 +161,7 @@ if operate_tag:
         if time_tag:
             time.sleep(s_time)
         if reg_tag:
-            for r in reg.values():
-                if r.to_decimal():
-                    print(f"%{r.name} = {r.to_decimal()}")
-        if pc_tag:
-            print(f"PC:{PC.to_hex()} ")
-        l = Lines(data)
-        tag = l.one_step()
-        data = tag[1][:]
-    for r in reg.values():
+            print("══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════")
+    for r in names:
         if r.to_decimal():
             print(f"%{r.name} = {r.to_decimal()}")
